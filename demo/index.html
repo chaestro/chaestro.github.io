@@ -622,6 +622,9 @@ async function submitContact(){
       body:JSON.stringify({mode:"feedback",email:email,company:company,feedback:prompt,source:"demo_v3_spot",domain:sel.domain,diagType:sel.diagType,timestamp:new Date().toISOString()})});
     status.innerHTML='<span style="color:var(--gn)">'+L("전송 완료! 빠른 시일 내에 연락드리겠습니다.","Sent! We'll reach out soon.")+'</span>';
     btn.textContent=L("전송 완료 ✓","Sent ✓");
+    document.getElementById("contact-prompt").value="";
+    document.getElementById("contact-email").value="";
+    document.getElementById("contact-company").value="";
   }catch(e){
     status.innerHTML='<span style="color:var(--rd)">'+L("전송 실패: ","Failed: ")+e.message+'</span>';
     btn.disabled=false;btn.textContent=L("정밀 진단 문의하기","Request Full Audit");
