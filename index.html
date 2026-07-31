@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CHAESTRO — AI가 배운 세계의 숨은 구조를 해석합니다</title>
-  <meta name="description" content="채스트로는 STRIDE로 블랙박스 AI의 판단을 점수나 이유 목록이 아닌 구조로 펼쳐, AI가 무엇을 배웠고 무엇을 오해했으며 아직 발견하지 못한 경계를 사람이 이해할 수 있는 인사이트로 바꿉니다." />
-  <meta property="og:title" content="CHAESTRO — AI가 배운 세계의 숨은 구조를 해석합니다" />
-  <meta property="og:description" content="채스트로는 STRIDE로 블랙박스 AI의 판단을 점수나 이유 목록이 아닌 구조로 펼쳐, AI가 무엇을 배웠고 무엇을 오해했으며 아직 발견하지 못한 경계를 사람이 이해할 수 있는 인사이트로 바꿉니다." />
-  <meta property="og:image" content="chaestro_wowmoment_v44.png" />
+  <title>CHAESTRO — AI 평가가 끝난 뒤, 무엇을 바꿀지 결정합니다</title>
+  <meta name="description" content="채스트로는 평균 점수에 가려진 AI 실패를 찾아, 무엇을 먼저 바꾸고 어떻게 확인할지 정리합니다." />
+  <meta property="og:title" content="CHAESTRO — AI 평가가 끝난 뒤, 무엇을 바꿀지 결정합니다" />
+  <meta property="og:description" content="AI 평가에서 멈추지 않고, 무엇을 바꾸고 어떻게 다시 확인할지 정리합니다." />
+  <meta property="og:image" content="https://www.chaestro.com/chaestro_logo_v24.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.chaestro.com/" />
+  <link rel="canonical" href="https://www.chaestro.com/" />
   <meta name="theme-color" content="#05070b" />
   <link rel="icon" type="image/png" href="chaestro_logo_v24.png" />
   <style>
@@ -95,9 +98,18 @@
       position:relative;
       overflow:hidden;
     }
-    .heroCard:before{content:""; position:absolute; inset:-2px; background:radial-gradient(460px 240px at 45% 0%, rgba(230,193,106,.18), transparent 70%); pointer-events:none}
-    .poster{width:100%; max-height:min(70vh,720px); object-fit:contain; display:block; border-radius:22px; position:relative; z-index:1; background:#05070b}
-    .posterNote{position:static; margin-top:12px; z-index:2; padding:12px 14px; border-radius:16px; background:rgba(255,255,255,.045); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.76); font-size:12px; line-height:1.55}
+    .heroCard:before{content:""; position:absolute; inset:-2px; background:radial-gradient(460px 240px at 45% 0%, rgba(118,244,255,.16), transparent 70%); pointer-events:none}
+    .decisionPanel{position:relative; z-index:1; padding:20px; border-radius:22px; background:rgba(3,6,12,.72); border:1px solid rgba(255,255,255,.10)}
+    .decisionTop{display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:16px}
+    .decisionTop strong{font-size:15px}
+    .syntheticBadge{display:inline-flex; align-items:center; min-height:26px; padding:5px 9px; border-radius:999px; border:1px solid rgba(230,193,106,.30); color:var(--gold2); background:rgba(230,193,106,.09); font-size:10px; font-weight:900; letter-spacing:.05em}
+    .decisionSteps{display:grid; gap:10px}
+    .decisionStep{display:grid; grid-template-columns:40px minmax(0,1fr) auto; gap:12px; align-items:center; padding:14px; border-radius:16px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.038)}
+    .decisionStep em{width:36px; height:36px; display:grid; place-items:center; border-radius:12px; background:rgba(118,244,255,.09); color:var(--cyan); font-size:11px; font-style:normal; font-weight:900}
+    .decisionStep b{display:block; font-size:14px; margin-bottom:4px}
+    .decisionStep span{display:block; color:var(--muted); font-size:12px; line-height:1.45}
+    .decisionStep small{color:var(--green); font-size:11px; font-weight:900}
+    .decisionNote{position:relative; z-index:1; margin-top:12px; padding:12px 14px; border-radius:16px; background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.72); font-size:12px; line-height:1.6}
     section{padding:86px 0; border-top:1px solid rgba(255,255,255,.075)}
     .sectionHead{display:flex; align-items:flex-end; justify-content:space-between; gap:28px; margin-bottom:30px}
     .sectionHead h2{font-size:clamp(29px, 4vw, 50px); line-height:1.08; letter-spacing:-.045em; margin:0}
@@ -112,14 +124,20 @@
     .hookCard{min-height:220px; position:relative; overflow:hidden}
     .hookCard:after{content:""; position:absolute; width:220px; height:220px; border-radius:50%; filter:blur(46px); opacity:.13; right:-90px; top:-70px; background:var(--gold)}
     .hookCard:nth-child(2):after{background:var(--cyan)}
-    .wow{display:grid; grid-template-columns: minmax(330px,.9fr) minmax(0,1.1fr); gap:34px; align-items:center}
-    .miniPoster{border-radius:26px; overflow:hidden; border:1px solid rgba(255,255,255,.16); background:#05070b; box-shadow:var(--shadow)}
-    .miniPoster img{width:100%; display:block}
+    .wow{display:grid; grid-template-columns:minmax(320px,.86fr) minmax(0,1.14fr); gap:34px; align-items:center}
+    .falseGreenCard{border-radius:26px; border:1px solid rgba(255,255,255,.16); background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025)); box-shadow:var(--shadow); padding:26px}
+    .scoreLine{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:22px 0; padding-bottom:18px; border-bottom:1px solid var(--line)}
+    .scoreLine b{font-size:48px; letter-spacing:-.06em}
+    .scoreLine span{color:var(--green); font-weight:900}
+    .failureReveal{padding:16px; border-radius:18px; border:1px solid rgba(255,103,103,.24); background:rgba(255,103,103,.07)}
+    .failureReveal b{display:block; color:#ffaaa0; margin-bottom:7px}
+    .failureReveal p{margin:0; color:var(--muted); line-height:1.65; font-size:14px}
     .metricGrid{display:grid; grid-template-columns:repeat(3,minmax(170px,1fr)); gap:12px; margin-top:22px}
     .metric{padding:18px 16px; border-radius:20px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.12); min-width:0}
     .metric b{font-size:clamp(22px,2.8vw,34px); line-height:1.08; display:block; letter-spacing:-.045em; white-space:normal; word-break:keep-all; overflow-wrap:normal; background:linear-gradient(135deg,#fff,var(--gold),var(--cyan)); -webkit-background-clip:text; background-clip:text; color:transparent}
     .metric span{display:block; color:var(--muted); font-size:13px; line-height:1.45; margin-bottom:9px}
     .notice{margin-top:18px; border:1px solid rgba(255,255,255,.11); background:rgba(255,255,255,.035); border-radius:18px; padding:14px 16px; color:var(--soft); font-size:13px; line-height:1.65}
+    .mobileBreak{display:none}
     .simBox{border:1px solid rgba(118,244,255,.18); background:linear-gradient(180deg, rgba(118,244,255,.06), rgba(255,255,255,.025)); border-radius:26px; padding:26px}
     .flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:12px; align-items:center; margin:22px 0}
     .flowItem{border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:16px; background:rgba(0,0,0,.18)}
@@ -133,9 +151,13 @@
     .list{display:grid; gap:12px}
     .listItem{display:flex; gap:12px; align-items:flex-start; color:var(--muted); line-height:1.65; font-size:15px}
     .check{flex:0 0 auto; width:22px; height:22px; border-radius:50%; display:grid; place-items:center; background:rgba(125,240,200,.12); color:var(--green); font-size:13px; margin-top:1px}
-    .profile{display:grid; grid-template-columns:260px minmax(0,1fr); gap:28px; align-items:center}
-    .profilePhoto{border-radius:28px; overflow:hidden; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); box-shadow:var(--shadow)}
-    .profilePhoto img{display:block; width:100%; aspect-ratio:1/1.12; object-fit:cover; object-position:center 20%}
+    .profile{display:grid; grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr); gap:28px; align-items:start}
+    .boundaryGrid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}
+    .boundaryCard{padding:22px; border-radius:22px; border:1px solid var(--line); background:rgba(255,255,255,.04)}
+    .boundaryCard.current{border-color:rgba(125,240,200,.24); background:rgba(125,240,200,.055)}
+    .boundaryCard.preview{border-color:rgba(151,185,255,.26); background:rgba(151,185,255,.055)}
+    .boundaryCard h3{margin:8px 0 10px}
+    .boundaryCard p{margin:0; color:var(--muted); line-height:1.7; font-size:14px}
     .pillRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
     .pill{font-size:12px; color:rgba(255,255,255,.78); padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04)}
     .contactBox{padding:44px; border-radius:34px; border:1px solid rgba(230,193,106,.28); background:
@@ -149,7 +171,6 @@
     @media (max-width:980px){
       .hero{padding-top:52px}
       .heroGrid,.wow,.productBox,.profile{grid-template-columns:1fr; gap:28px}
-      .poster{max-height:64vh}
       .sectionHead{display:block}
       .sectionHead p{margin-top:14px}
       .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -167,31 +188,32 @@
       .btn{width:100%; min-height:48px}
       section{padding:62px 0}
       .grid2,.grid3,.grid4,.metricGrid{grid-template-columns:1fr}
-      .poster{max-height:none; width:100%}
-      .posterNote{position:static; margin-top:10px; background:rgba(255,255,255,.05)}
       .heroCard{padding:10px; border-radius:24px}
       .sectionHead h2{font-size:34px}
       .flow{grid-template-columns:1fr; gap:9px}
       .arrow{text-align:center; transform:rotate(90deg)}
-      .profilePhoto{max-width:260px; margin:0 auto}
+      .boundaryGrid{grid-template-columns:1fr}
+      .decisionStep{grid-template-columns:36px minmax(0,1fr)}
+      .decisionStep small{grid-column:2}
       .contactBox{padding:30px 18px}
+      .mobileBreak{display:inline}
     }
   </style>
 </head>
 <body>
   <nav class="nav">
     <div class="wrap navin">
-      <a class="brand" href="#top" aria-label="Chaestro home">
-        <img src="chaestro_logo_v24.png" alt="Chaestro logo" />
-        <div><b>CHAESTRO</b><span>AI Structure Intelligence</span></div>
+      <a class="brand" href="#top" aria-label="CHAESTRO 홈">
+        <img src="chaestro_logo_v24.png" alt="CHAESTRO 로고" />
+        <div><b>CHAESTRO</b><span>Change Decision &amp; Assurance</span></div>
       </a>
-      <div class="navlinks" aria-label="Navigation">
-        <a href="#hook">Vision</a>
-        <a href="#stride">STRIDE</a>
-        <a href="#product">Report</a>
-        <a href="#founder">Founder</a>
-        <a class="navcta" href="https://chaestro-public-synthetic-v082.chaeyunko.chatgpt.site/?utm_source=chaestro_homepage&amp;utm_medium=nav&amp;utm_campaign=v082" target="_blank" rel="noopener noreferrer">3분 Demo</a>
-        <a href="https://calendly.com/chaeyun-chaestro/chaestro-meeting" target="_blank" rel="noopener noreferrer">Coffee Chat</a>
+      <div class="navlinks" aria-label="주요 메뉴">
+        <a href="#value">가치</a>
+        <a href="#how">작동 방식</a>
+        <a href="#product">현재 제공</a>
+        <a href="#boundary">연구 방향</a>
+        <a class="navcta" href="/demo/">3분 데모</a>
+        <a href="/research/">피드백 참여</a>
       </div>
     </div>
   </nav>
@@ -200,92 +222,111 @@
     <section class="hero">
       <div class="wrap heroGrid">
         <div>
-          <div class="eyebrow"><span class="dot"></span> CHAESTRO STRIDE</div>
-          <h1><span class="gradText">AI가 배운 세계의<br/>숨은 구조를<br/>해석합니다.</span></h1>
+          <div class="eyebrow"><span class="dot"></span> CHANGE DECISION &amp; ASSURANCE</div>
+          <h1><span class="gradText">숨은 실패를 찾습니다.<br/>바꿀 곳을 좁힙니다.<br/>확인 방법까지 정합니다.</span></h1>
           <p class="lead">
-            기업이 AI를 도입한 뒤 원하는 것은 결국 두 가지입니다.
-            <strong>안전하게 운영할 수 있다는 근거</strong>, 그리고 <strong>AI를 목표 기준에 더 가깝게 개선하는 방향</strong>.
-            채스트로는 STRIDE로 AI의 가능성과 한계를 함께 진단합니다.
+            평균 점수에 가려진 실패 조건을 창업자와 함께 검토해,
+            <strong>실제로 바꿀 수 있는 지점</strong>을 좁힙니다.
+            우선 검토할 수정안과 이를 같은 조건에서 다시 확인할
+            <strong>최소 실험</strong>을 정리합니다.
           </p>
           <div class="heroActions">
-            <a class="btn btnGold" href="https://chaestro-public-synthetic-v082.chaeyunko.chatgpt.site/?utm_source=chaestro_homepage&amp;utm_medium=hero&amp;utm_campaign=v082" target="_blank" rel="noopener noreferrer">3분 Change Decision Demo</a>
-            <a class="btn btnGlass" href="https://calendly.com/chaeyun-chaestro/chaestro-meeting" target="_blank" rel="noopener noreferrer">STRIDE Bridge Report 상담하기</a>
-            <a class="btn btnGlass" href="#wow">전율의 사례 보기</a>
+            <a class="btn btnGold" href="/demo/">3분 합성 데모 보기</a>
+            <a class="btn btnGlass" href="/research/">피드백 참여</a>
+            <a class="btn btnGlass" href="https://calendly.com/chaeyun-chaestro/chaestro-meeting" target="_blank" rel="noopener noreferrer">15분 사례 상담</a>
           </div>
         </div>
-        <div class="heroCard" aria-label="STRIDE Wow Moment poster">
-          <img class="poster" src="chaestro_wowmoment_v44.png" alt="AI가 배운 세계의 숨은 구조가 드러나는 STRIDE research preview poster" />
-          <div class="posterNote">Research Preview · 내부 구조 발견 실험 기반 시각화입니다. 실제 고객 환경 또는 상용 모델 성능 보장을 의미하지 않습니다.</div>
+        <div class="heroCard" aria-label="합성 사례의 변경 결정 흐름">
+          <div class="decisionPanel">
+            <div class="decisionTop">
+              <strong>권한 밖 문서가 노출된 기업용 검색 AI</strong>
+              <span class="syntheticBadge">합성 사례 · 실제 고객 성과가 아닙니다</span>
+            </div>
+            <div class="decisionSteps">
+              <div class="decisionStep"><em>01</em><div><b>기존 평가</b><span>평균 점수는 통과했습니다.</span></div><small>통과 96%</small></div>
+              <div class="decisionStep"><em>02</em><div><b>숨은 실패 경로</b><span>외부 계정이 여러 번 재시도할 때 권한 밖 문서가 노출됩니다.</span></div><small>8 / 100</small></div>
+              <div class="decisionStep"><em>03</em><div><b>먼저 바꿀 지점</b><span>검색 전에 권한을 확인하도록 바꾸는 안을 우선 검토합니다.</span></div><small>30 → 3 → 1</small></div>
+              <div class="decisionStep"><em>04</em><div><b>수정안을 확인할 최소 실험</b><span>같은 조건에서 실패 감소·새 문제·비용·지연을 다시 확인합니다.</span></div><small>8 → 0*</small></div>
+            </div>
+          </div>
+          <div class="decisionNote">* 합성 사례의 흐름을 보여주기 위해 만든 수치입니다. 실제 고객 성과가 아니며, STRIDE v4의 자동 분석 결과도 아닙니다.</div>
         </div>
       </div>
     </section>
 
-    <section id="hook">
+    <section id="value">
       <div class="wrap">
         <div class="sectionHead">
-          <h2>고객이 원하는 것은<br/>두 가지입니다.</h2>
-          <p>설명 가능성 자체가 목적은 아닙니다. 기업은 AI를 믿고 운영할 수 있는 근거와, AI를 더 잘하게 만드는 구체적인 개선 방향을 원합니다.</p>
+          <h2>숨은 실패를 찾고,<br/>바꿀 지점을 좁히고,<br/>확인 방법까지 정합니다.</h2>
+          <p>팀이 결정해야 하는 것은 무엇을 먼저 바꿀지, 어떻게 확인할지, 확인한 결과를 어디까지 적용할지입니다.</p>
         </div>
         <div class="grid2">
           <div class="card hookCard">
             <div class="icon">01</div>
-            <h3>안전한 운영 근거</h3>
-            <p>AI가 어떤 조건에서 정책·규정·고객 기준을 벗어날 수 있는지 사전에 확인해야 합니다. 사고가 난 뒤의 설명보다, 사고 전의 구조적 진단이 더 중요합니다.</p>
+            <h3>숨은 실패를 실제 수정 지점으로 좁힙니다</h3>
+            <p>평균 점수 아래에 묻힌 실패 경로를 조건과 순서로 펼치고, 사람이 실제로 바꿀 수 있는 지점과 연결합니다.</p>
           </div>
           <div class="card hookCard">
             <div class="icon">02</div>
-            <h3>목표 기준으로의 개선</h3>
-            <p>기업이 원하는 AI는 단지 “틀리지 않는 AI”가 아닙니다. 더 정확하고, 더 일관되며, 더 바람직한 목표 함수에 가까워지는 AI입니다.</p>
+            <h3>필요한 범위로 좁힌 실험으로 확인합니다</h3>
+            <p>모든 후보를 한꺼번에 고치지 않습니다. 우선순위가 높은 수정안과 최소 실험을 정하고, 실패 감소·새 문제·비용·지연과 아직 확인하지 않은 범위를 함께 봅니다.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="wow">
+    <section id="how">
       <div class="wrap wow">
-        <div class="miniPoster"><img src="chaestro_wowmoment_v44.png" alt="STRIDE Wow Moment visual" /></div>
-        <div>
-          <div class="smallcaps">Wow Moment</div>
-          <h2 style="font-size:clamp(30px,4vw,52px); margin:12px 0 16px; letter-spacing:-.045em">AI가 배운 것,<br/>다르게 배운 것,<br/>아직 못 배운 것.</h2>
-          <p class="lead" style="font-size:17px">STRIDE는 AI의 현재 행동을 사람이 검토 가능한 구조로 번역합니다. 그 결과 안전의 경계와 성능 개선의 길을 같은 지도 위에서 볼 수 있습니다.</p>
-          <div class="metricGrid">
-            <div class="metric"><span>숨은 조건 발견</span><b>93.3%</b></div>
-            <div class="metric"><span>처음 찾기까지</span><b>24.5회 → 1회</b></div>
-            <div class="metric"><span>발견 성공률</span><b>약 9% → 99%</b></div>
+        <div class="falseGreenCard">
+          <div class="smallcaps">겉보기에는 통과</div>
+          <div class="scoreLine"><div><span>기존 평가</span><br/><small style="color:var(--soft)">평균 점수·통과율</small></div><b>96%</b></div>
+          <div class="failureReveal">
+            <b>하지만 특정 실행 경로에서는 실패했습니다.</b>
+            <p>외부 계정 → 여러 번 재시도 → 이전 대화 정보 재사용 순서에서 권한 경계가 무너지는 합성 사례입니다.</p>
           </div>
-          <div class="notice">위 수치는 채스트로 내부 구조 발견 시뮬레이션에서 얻은 research preview입니다. 고객 데이터, 상용 모델, 외부 논문 심사를 거친 일반 성능 보장이 아니라, STRIDE의 작동 원리와 가능성을 설명하기 위한 실험 결과입니다.</div>
+        </div>
+        <div>
+          <div class="smallcaps">3분 변경 판단</div>
+          <h2 style="font-size:clamp(30px,4vw,52px); margin:12px 0 16px; letter-spacing:-.045em">평균 점수는 통과했습니다.<br/>숨은 실패는 아직 남았습니다.</h2>
+          <p class="lead" style="font-size:17px">3분 동안, 복잡한 증거를 어떻게 우선 수정안과 최소 실험으로 정리하는지 확인할 수 있습니다.</p>
+          <div class="metricGrid">
+            <div class="metric"><span>수정 후보</span><b>30</b></div>
+            <div class="metric"><span>우선 검토</span><b>3</b></div>
+            <div class="metric"><span>먼저 검증할 수정안</span><b>1</b></div>
+          </div>
+          <div class="notice">30→3→1은 합성 사례의 판단 흐름을 보여주는 예시입니다. 실제 고객 성과나 STRIDE v4의 자동 분석 결과가 아닙니다.</div>
         </div>
       </div>
     </section>
 
-    <section id="simulation">
+    <section id="proof">
       <div class="wrap">
         <div class="sectionHead">
-          <h2>STRIDE는 보이지 않던<br/>경계를 찾습니다.</h2>
-          <p>초기 데이터에 명확한 실패 사례가 없어도, AI의 행동에는 흔들림과 잔차가 남습니다. STRIDE는 그 신호를 구조로 펼쳐, 아직 드러나지 않은 조건과 경계를 찾아갑니다.</p>
+          <h2>수정안은 가설입니다.<br/>확인은 실험으로 합니다.</h2>
+          <p>평균 점수가 한 번 좋아졌다는 이유만으로 배포를 결정하지 않습니다. 같은 조건에서 실패가 줄었는지, 다른 정상 경로를 해치지 않았는지, 어디까지 확인했는지를 함께 봅니다.</p>
         </div>
         <div class="simBox">
           <div class="grid2">
             <div class="card">
-              <h3>명확한 기준 이탈</h3>
-              <p>각 후보 입력이 AI의 정책·가드레일·고객 기준을 벗어났는지를 나타내는 결과입니다. 이미 사고가 난 뒤의 설명이 아니라, 어떤 조건에서 기준 이탈이 발생하는지 확인하는 출발점입니다.</p>
+              <h3>예상 변화</h3>
+              <p>수정안이 어떤 실패를 줄일 것으로 기대하는지, 어떤 새 문제가 생길 수 있는지 먼저 적습니다.</p>
             </div>
             <div class="card">
-              <h3>초기 신호</h3>
-              <p>기준 이탈이 명확히 발생하기 전에도 AI의 행동에는 흔들림과 near-miss 신호가 남습니다. STRIDE는 이 연속적인 가능성 신호를 읽어, 숨은 경계로 가까워지는 방향을 보여줍니다.</p>
+              <h3>관찰된 변화</h3>
+              <p>같은 조건에서 다시 실행한 결과를 예상과 나누어 기록합니다. 데모의 합성 수치는 실제 고객 결과와 구분해 표시합니다.</p>
             </div>
           </div>
-          <div class="flow" aria-label="STRIDE simulation flow">
-            <div class="flowItem"><strong>명확한 실패 0건</strong><span>초기 데이터에는 기준 이탈 사례가 보이지 않습니다.</span></div>
+          <div class="flow" aria-label="변경 검증 흐름">
+            <div class="flowItem"><strong>실패 경로 지도</strong><span>실패가 시작되는 조건과 실행 경로</span></div>
             <div class="arrow">→</div>
-            <div class="flowItem"><strong>초기 신호 + 잔차</strong><span>그러나 모델이 흔들리는 방향과 설명되지 않은 잔차가 남습니다.</span></div>
+            <div class="flowItem"><strong>최소 검증</strong><span>수정안의 효과를 확인하는 가장 작은 비교</span></div>
             <div class="arrow">→</div>
-            <div class="flowItem"><strong>숨은 조건과 경계</strong><span>STRIDE는 투영·분해를 통해 빠진 조건과 경계를 찾아갑니다.</span></div>
+            <div class="flowItem"><strong>확인된 적용 범위</strong><span>확인한 범위, 아직 모르는 범위, 다시 확인할 조건</span></div>
           </div>
           <div class="grid3">
-            <div class="card"><h3>Projection</h3><p>AI 행동을 사람이 검토 가능한 구조공간으로 옮겨 봅니다.</p></div>
-            <div class="card"><h3>Decomposition</h3><p>잘 배운 구조, 다르게 배운 구조, 아직 못 배운 구조를 나누어 봅니다.</p></div>
-            <div class="card"><h3>Prescription</h3><p>위험을 줄이고 목표 기준에 가까워지는 다음 개선 방향을 제안합니다.</p></div>
+            <div class="card"><h3>실패 감소</h3><p>원래 실패 조건에서 목표 기준을 회복했는지 확인합니다.</p></div>
+            <div class="card"><h3>새 문제</h3><p>기존 정상 조건과 안전 경계를 해치지 않았는지 확인합니다.</p></div>
+            <div class="card"><h3>비용과 지연</h3><p>운영 비용과 지연이 허용 범위 안에 있는지 확인합니다.</p></div>
           </div>
         </div>
       </div>
@@ -294,27 +335,27 @@
     <section id="problem">
       <div class="wrap">
         <div class="sectionHead">
-          <h2>AI는 도입보다<br/>운영이 어렵습니다.</h2>
-          <p>기업의 AI는 한 번 출시되면 고객, 규정, 내부 정책, 성능 목표 사이에서 계속 판단합니다. 문제는 그 판단이 언제, 왜, 어떻게 달라지는지 잘 보이지 않는다는 점입니다.</p>
+          <h2>AI를 도입한 뒤에도<br/>운영을 위한 판단은<br/>계속됩니다.</h2>
+          <p>AI가 고객에게 답하고 문서를 검색하고 도구를 호출할 때마다 여러 기준을 동시에 지켜야 합니다. 하지만 평균 점수만으로는 어떤 조건에서 기준이 무너지는지 알기 어렵습니다.</p>
         </div>
         <div class="grid3">
-          <div class="card"><div class="icon">A</div><h3>보이지 않는 기준 이탈</h3><p>AI가 내부 정책이나 고객 기준과 다른 방향으로 답해도, 사고 전에는 그 조건을 파악하기 어렵습니다.</p></div>
-          <div class="card"><div class="icon">B</div><h3>성능 개선의 병목</h3><p>정확도를 높이고 싶어도, 무엇을 유지하고 무엇을 줄이고 무엇을 보완해야 하는지 알기 어렵습니다.</p></div>
-          <div class="card"><div class="icon">C</div><h3>설명에서 멈추는 리포트</h3><p>“왜 답했는가”만으로는 부족합니다. 기업은 “어떻게 더 나아질 것인가”까지 필요로 합니다.</p></div>
+          <div class="card"><div class="icon">A</div><h3>특정 조건에서만 생기는 실패</h3><p>AI가 내부 정책이나 고객 기준과 다른 방향으로 답해도, 사고 전에는 그 조건을 파악하기 어렵습니다.</p></div>
+          <div class="card"><div class="icon">B</div><h3>무엇을 먼저 바꿀지 모호함</h3><p>정확도를 높이고 싶어도, 무엇을 유지하고 무엇을 바꾸고 무엇을 보완해야 하는지 알기 어렵습니다.</p></div>
+          <div class="card"><div class="icon">C</div><h3>설명에서 멈추는 보고서</h3><p>“왜 실패했는가”만으로는 부족합니다. 다음 배포를 위해 무엇을 바꾸고 어떻게 확인할지까지 필요합니다.</p></div>
         </div>
       </div>
     </section>
 
-    <section id="stride">
+    <section id="boundary">
       <div class="wrap">
         <div class="sectionHead">
-          <h2>STRIDE는 AI의<br/>배움 상태를 진단합니다.</h2>
-          <p>STRIDE는 단순 XAI가 아니라, AI가 목표 기준에 가까워지기 위해 무엇을 더 배워야 하는지 보여주는 진단·처방 프레임워크입니다.</p>
+          <h2>지금 필요한 변경은<br/>창업자와 함께 정합니다.<br/>복잡한 구조를 찾는 방법은<br/>아직 연구 중입니다.</h2>
+          <p>현재는 한 가지 실패 사례를 함께 검토해 무엇을 먼저 바꿀지와 최소 검증 계획을 정리합니다. STRIDE v4는 더 복잡한 실패 구조와 더 작은 변경안을 찾기 위한 연구입니다.</p>
         </div>
         <div class="grid3">
-          <div class="card"><div class="icon">✓</div><h3>배운 것</h3><p>목표 기준과 닮은 구조입니다. 유지하거나 강화해야 하는 AI의 좋은 신호입니다.</p></div>
-          <div class="card"><div class="icon">!</div><h3>다르게 배운 것</h3><p>목표와 다르게 작동하는 구조입니다. 안전·일관성·성능을 위해 줄여야 할 신호입니다.</p></div>
-          <div class="card"><div class="icon">+</div><h3>아직 못 배운 것</h3><p>모델이 놓친 missing structure입니다. 성능 개선과 새로운 가능성의 출발점입니다.</p></div>
+          <div class="card"><div class="icon">현재</div><h3>창업자와 함께하는 변경 진단</h3><p>실패 경로, 바꿀 수 있는 지점, 수정 가설과 최소 검증 계획을 함께 검토해 정리합니다.</p></div>
+          <div class="card"><div class="icon">3분</div><h3>3분 합성 사례 데모</h3><p>실제 고객 자료 없이, 채스트로의 판단 흐름을 합성 사례로 보여드립니다.</p></div>
+          <div class="card"><div class="icon">연구</div><h3>STRIDE v4 연구</h3><p>복잡한 실패 구조와 더 작은 변경안을 찾는 방법을 연구합니다. 현재 변경 진단은 창업자가 직접 함께합니다.</p></div>
         </div>
       </div>
     </section>
@@ -322,19 +363,19 @@
     <section id="product">
       <div class="wrap productBox">
         <div class="reportCard">
-          <div class="smallcaps">Product</div>
-          <h3>STRIDE<br/>Bridge Report</h3>
-          <p class="lead" style="font-size:16px; margin:0 0 24px">2~4주 단위 AI 행동 진단 리포트. 완성된 SaaS를 기다리지 않고, 고객 AI의 안전 근거와 개선 방향을 먼저 확인합니다.</p>
-          <a class="btn btnGold" href="https://calendly.com/chaeyun-chaestro/chaestro-meeting" target="_blank" rel="noopener">파일럿 상담 예약</a>
+          <div class="smallcaps">현재 제공 · 창업자 직접 참여</div>
+          <h3>변경 진단</h3>
+          <p class="lead" style="font-size:16px; margin:0 0 24px">한 가지 실패 사례를 함께 검토합니다. 2~3일 안에 우선 검토할 수정안과 이를 확인할 최소 검증 계획을 정리해 드립니다.</p>
+          <a class="btn btnGold" href="https://calendly.com/chaeyun-chaestro/chaestro-meeting" target="_blank" rel="noopener">15분 사례 상담</a>
         </div>
         <div class="card">
           <h3>고객이 받는 것</h3>
           <div class="list" style="margin-top:16px">
-            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">Safety Evidence</strong><br/>AI가 어떤 조건에서 기준을 벗어날 수 있는지에 대한 진단 근거</div></div>
-            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">Target Gap Map</strong><br/>기업이 원하는 기준과 현재 AI 행동 사이의 Gap 지도</div></div>
-            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">Structure Diagnosis</strong><br/>배운 것, 다르게 배운 것, 아직 못 배운 것의 구조적 분해</div></div>
-            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">Improvement Direction</strong><br/>어떤 조건을 줄이고, 어떤 구조를 보완해야 하는지에 대한 처방</div></div>
-            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">Executive Report</strong><br/>내부 보고, PoC 의사결정, 규제 대응 논의에 쓸 수 있는 요약 리포트</div></div>
+            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">실패 경로 지도</strong><br/>어떤 조건과 실행 경로에서 실패가 시작되는지</div></div>
+            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">변경 가능 지점</strong><br/>데이터·프롬프트·도구·정책 중 실제로 바꿀 수 있는 지점</div></div>
+            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">수정 가설과 우선순위</strong><br/>왜 이 수정안을 먼저 보는지에 대한 근거</div></div>
+            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">최소 검증 계획</strong><br/>실패 감소·새 문제·비용·지연을 확인하는 가장 작은 실험</div></div>
+            <div class="listItem"><span class="check">✓</span><div><strong style="color:var(--text)">확인된 범위와 남은 조건</strong><br/>확인한 범위, 아직 확인하지 않은 범위와 다시 검증할 조건</div></div>
           </div>
         </div>
       </div>
@@ -343,34 +384,45 @@
     <section id="customers">
       <div class="wrap">
         <div class="sectionHead">
-          <h2>이런 팀에게<br/>가장 먼저 필요합니다.</h2>
-          <p>이미 AI를 운영하고 있고, 안전한 운영 근거와 성능 개선 방향을 함께 설명해야 하는 팀을 먼저 만납니다.</p>
+          <h2>AI를 운영 중인가요?<br/>이런 팀부터 만납니다.</h2>
+          <p>안전한 운영 근거와 성능 개선 방향을 함께 설명해야 하는 AI 운영팀에 먼저 집중합니다.</p>
         </div>
         <div class="grid4">
-          <div class="card"><h3>LLM/Agent 운영 기업</h3><p>고객 응대, 업무 자동화, 내부 도구에서 AI 행동을 검증해야 하는 팀</p></div>
-          <div class="card"><h3>금융·보험·핀테크</h3><p>심사, 추천, 리스크, 고객 대응 모델의 기준 정합성을 확인해야 하는 팀</p></div>
-          <div class="card"><h3>AI Governance</h3><p>내부 정책, 리스크 관리, 설명 가능성, 감사 대응 체계를 만드는 조직</p></div>
-          <div class="card"><h3>High-risk AI</h3><p>의료, 보안, 법률, 공공 등 안전성과 신뢰가 중요한 AI 운영 조직</p></div>
+          <div class="card"><h3>생성형 AI·에이전트 제품팀</h3><p>고객 응대, 업무 자동화, 내부 도구에서 반복되는 실패를 줄여야 하는 팀</p></div>
+          <div class="card"><h3>기업용 검색 AI 팀</h3><p>권한, 검색, 이전 대화 정보와 도구 호출이 얽힌 실패 경로를 검토해야 하는 팀</p></div>
+          <div class="card"><h3>AI 평가·품질 검증팀</h3><p>점수와 실패 목록은 있지만 무엇을 먼저 바꿀지 합의하기 어려운 팀</p></div>
+          <div class="card"><h3>AI 운영·정책 담당팀</h3><p>변경 근거, 새 문제의 조건, 확인한 범위와 다음 검증 시점을 남겨야 하는 팀</p></div>
         </div>
       </div>
     </section>
 
     <section id="founder">
       <div class="wrap profile">
-        <div class="profilePhoto"><img src="chaeyun_profile.jpg" alt="고채윤 대표 프로필 사진" /></div>
         <div>
-          <div class="smallcaps">Founder</div>
-          <h2 style="margin:10px 0 14px">고채윤<br/><span style="color:var(--muted)">Founder & CEO</span></h2>
-          <p class="lead" style="font-size:16px">경제학은 선택과 인센티브를, 철학은 판단의 기준을, 수학은 그것을 증명 가능한 구조로 보는 훈련이었습니다. 저는 보이지 않는 판단을 사람이 이해할 수 있는 형태로 번역하는 문제에 매달려왔고, 수학과 석사 과정에서 STRIDE를 고안했습니다. 이제 이 기술을 AI 행동 진단과 개선 리포트로 제품화하고 있습니다.</p>
+          <div class="smallcaps">창업자</div>
+          <h2 style="margin:10px 0 14px">고채윤<br/><span style="color:var(--muted)">창업자·대표</span></h2>
+          <p class="lead" style="font-size:16px">경제학·철학·수학을 공부하며 선택과 판단의 기준, 검증 가능한 구조를 다뤘습니다. 지금은 AI의 복잡한 실패 증거를 팀이 실행할 수 있는 수정안과 검증 계획으로 정리하고 있습니다.</p>
           <div class="pillRow">
-            <span class="pill">STRIDE 창안·구현</span>
-            <span class="pill">XAI / AI 구조 해석</span>
-            <span class="pill">특허·PCT 진행</span>
-            <span class="pill">Founder-led Research</span>
+            <span class="pill">Change Decision</span>
+            <span class="pill">Agent Assurance</span>
+            <span class="pill">특허 출원·국제출원 절차 진행 중</span>
+            <span class="pill">창업자 직접 변경 진단</span>
           </div>
           <div class="heroActions" style="margin-top:22px">
             <a class="btn btnGlass" href="https://www.linkedin.com/in/chaeyunko" target="_blank" rel="noopener">LinkedIn</a>
-            <a class="btn btnGlass" href="https://youtu.be/Lm-pdP_obak?si=Wy6GsAwdpAxSnDet" target="_blank" rel="noopener">Algorithm of Starlight</a>
+            <a class="btn btnGlass" href="https://youtu.be/Lm-pdP_obak?si=Wy6GsAwdpAxSnDet" target="_blank" rel="noopener">연구 소개 영상</a>
+          </div>
+        </div>
+        <div class="boundaryGrid" aria-label="현재 제공과 연구 방향">
+          <div class="boundaryCard current">
+            <div class="smallcaps">현재 제공</div>
+            <h3>창업자가 함께하는 변경 진단</h3>
+            <p>한 사례의 증거를 검토해 실패 경로, 바꿀 수 있는 지점, 수정 가설, 최소 검증 계획과 적용 범위를 정리합니다.</p>
+          </div>
+          <div class="boundaryCard preview">
+            <div class="smallcaps">연구 중</div>
+            <h3>STRIDE v4 · 연구 중</h3>
+            <p>STRIDE v4는 복잡한 실패 구조와 더 작은 변경안을 찾기 위한 연구입니다.</p>
           </div>
         </div>
       </div>
@@ -379,11 +431,12 @@
     <section id="contact">
       <div class="wrap">
         <div class="contactBox">
-          <div class="smallcaps">Contact</div>
-          <h2>채스트로는<br/>AI의 숨은 스펙트럼을 지휘합니다.</h2>
-          <p class="lead" style="font-size:17px; margin:0 auto 26px; max-width:800px">마에스트로가 악보의 구조를 읽어 아름다운 음악을 들려주듯,<br/>채스트로는 AI의 숨겨진 판단 구조를 읽어 안전한 운영 근거와 더 나은 개선 방향을 안내합니다.<br/>귀사의 AI가 더 안전하고 더 뛰어나게 도약하는 길을 함께 찾겠습니다.</p>
+          <div class="smallcaps">상담</div>
+          <h2>평가가 끝났다면,<br/>이제 바꿀 곳을 정합니다.<br/>확인 방법까지<span class="mobileBreak"><br/></span> 함께 설계합니다.</h2>
+          <p class="lead" style="font-size:17px; margin:0 auto 26px; max-width:800px">먼저 15분 상담에서 현재 문제와 기대하는 결과를 확인합니다.<br/>실제 자료가 필요한 경우에는 다룰 정보와 제공 범위를 함께 정합니다. 데모와 피드백 참여에는 합성 사례만 사용합니다.</p>
           <div class="heroActions" style="justify-content:center">
-            <a class="btn btnGold" href="https://calendly.com/chaeyun-chaestro/chaestro-meeting" target="_blank" rel="noopener">커피챗 / 파일럿 상담 예약</a>
+            <a class="btn btnGold" href="https://calendly.com/chaeyun-chaestro/chaestro-meeting" target="_blank" rel="noopener">15분 사례 상담 예약</a>
+            <a class="btn btnGlass" href="/demo/">3분 합성 데모</a>
             <a class="btn btnGlass" href="mailto:contact@chaestro.com">contact@chaestro.com</a>
           </div>
         </div>
@@ -392,7 +445,7 @@
   </main>
 
   <footer>
-    <div class="wrap">© 2026 CHAESTRO Inc. · AI Structure Intelligence</div>
+    <div class="wrap">© 2026 CHAESTRO Inc. · Change Decision &amp; Assurance</div>
   </footer>
 </body>
 </html>
