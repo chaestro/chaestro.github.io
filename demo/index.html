@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <title>CHAESTRO · 3분 합성 데모</title>
+  <style>
+    :root{color-scheme:dark;--bg:#05070b;--text:#f7f5ee;--muted:#aaa9a4;--gold:#e6c16a;--cyan:#76f4ff}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:
+      radial-gradient(700px 360px at 16% 10%,rgba(151,185,255,.12),transparent 70%),
+      radial-gradient(600px 360px at 88% 82%,rgba(118,244,255,.10),transparent 72%),var(--bg);
+      color:var(--text);font-family:Inter,Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{width:min(620px,100%);padding:34px;border:1px solid rgba(255,255,255,.14);border-radius:28px;background:rgba(255,255,255,.045);box-shadow:0 28px 90px rgba(0,0,0,.35)}
+    .brand{font-size:13px;font-weight:900;letter-spacing:.18em;color:var(--gold)}
+    h1{margin:18px 0 14px;font-size:clamp(30px,7vw,52px);line-height:1.08;letter-spacing:-.045em}
+    p{margin:0;color:var(--muted);line-height:1.75}
+    .badge{display:inline-flex;margin-top:20px;padding:7px 10px;border:1px solid rgba(118,244,255,.24);border-radius:999px;color:var(--cyan);font-size:12px;font-weight:800}
+    a{display:inline-flex;margin-top:24px;min-height:48px;align-items:center;justify-content:center;padding:0 20px;border-radius:999px;
+      background:linear-gradient(135deg,#ffe39c,var(--cyan));color:#080a0d;text-decoration:none;font-weight:900}
+    small{display:block;margin-top:18px;color:#777;line-height:1.6}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand">CHAESTRO · CHANGE DECISION &amp; ASSURANCE</div>
+    <h1>3분 합성 데모로 이동합니다.</h1>
+    <p>실제 고객 자료를 사용하지 않는 합성 데모입니다. 현재는 초대받은 피드백 참여자만 이용할 수 있습니다. 전달받은 비밀번호는 다음 화면에서 입력해 주세요.</p>
+    <span class="badge">합성 사례 · 실제 고객 성과가 아닙니다</span><br/>
+    <a id="continue" href="https://chaestro-public-synthetic-v082.chaeyunko.chatgpt.site/?utm_source=chaestro_homepage&amp;utm_medium=path&amp;utm_campaign=learningmate8_v082">3분 데모로 이동</a>
+    <small>잠시 후 자동으로 이동합니다. 이동하지 않으면 버튼을 눌러 주세요.</small>
+  </main>
+  <script>
+    (() => {
+      const target = new URL("https://chaestro-public-synthetic-v082.chaeyunko.chatgpt.site/");
+      const source = new URLSearchParams(window.location.search);
+      const allowed = ["utm_source", "utm_medium", "utm_campaign", "utm_content"];
+      const defaults = {
+        utm_source: "chaestro_homepage",
+        utm_medium: "path",
+        utm_campaign: "learningmate8_v082"
+      };
+      for (const [key, value] of Object.entries(defaults)) target.searchParams.set(key, value);
+      for (const key of allowed) {
+        const value = source.get(key);
+        if (value) target.searchParams.set(key, value.slice(0, 120));
+      }
+      document.getElementById("continue").href = target.toString();
+      window.setTimeout(() => window.location.replace(target.toString()), 900);
+    })();
+  </script>
+</body>
+</html>
